@@ -1,6 +1,8 @@
 /* SETS UP WHAT OUR TABLE WILL LOOK LIKE */
 -- Drops the department table if it exists
 DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS employee;
 
 CREATE TABLE department (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
