@@ -3,7 +3,6 @@ const mysql = require('mysql2');
 
 // Import .env file, overriding any existing environmental variables
 require('dotenv').config({ override: true });
-console.log(process.env);
 
 // Create connection to database
 const db = mysql.createConnection({

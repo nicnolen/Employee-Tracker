@@ -17,7 +17,8 @@ const promptUser = () => {
       {
         type: 'list',
         name: 'choices',
-        message: 'What would you like to do?',
+        message:
+          'What would you like to do? (Scroll to "quit" to end the prompts)',
         choices: [
           'View All Departments',
           'View all Roles',
@@ -45,7 +46,8 @@ const promptUser = () => {
         showDepartments();
       }
 
-      if (choices === 'No Action') {
+      if (choices === 'Quit') {
+        console.info('Ending prompts');
         connection.end();
       }
     });
@@ -53,12 +55,14 @@ const promptUser = () => {
 
 // Function to show all departments
 showDepartments = () => {
-  console.info('Showing all departments');
   const sql = `SELECT department.id AS id, department.name AS department FROM department`;
 
   db.query(sql, (err, rows) => {
     if (err) throw err;
     console.table(rows);
+
+    console.info('Showing all departments!');
+    // Return the user to the prompts
     promptUser();
   });
 };
