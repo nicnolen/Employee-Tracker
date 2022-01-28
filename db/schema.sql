@@ -1,5 +1,5 @@
 /* SETS UP WHAT OUR TABLE WILL LOOK LIKE */
-/* Drops the department table if it exists */
+-- Drops the department table if it exists
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS employee;
@@ -23,5 +23,6 @@ CREATE TABLE employee (
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INTEGER NOT NULL,
-    manager_id INTEGER
+    manager_id INTEGER,
+    CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
