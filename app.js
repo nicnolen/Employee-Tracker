@@ -54,6 +54,10 @@ const promptUser = () => {
         addDepartment();
       }
 
+      if (choices === 'Add a Role') {
+        addRole();
+      }
+
       if (choices === 'Delete a Department') {
         deleteDepartment();
       }
@@ -125,6 +129,78 @@ addDepartment = () => {
     });
 };
 
+// ADD role
+addRole = () => {
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'role',
+        message: 'What role would you like to add?',
+        validate: addRole => {
+          if (addRole) {
+            return true;
+          } else {
+            console.info('Please enter a role');
+            return false;
+          }
+        },
+      },
+      {
+        type: 'number',
+        name: 'salary',
+        message: 'What is the salary for this role?',
+        validate: addSalary => {
+          if (addSalary) {
+            return true;
+          } else {
+            console.info('Please enter a salary (numbers only)');
+            return false;
+          }
+        },
+      },
+    ])
+    .then(answer => {
+      const params = [answer.role, answer.salary];
+
+      // Grab department from the department table
+      const sql = `SELECT name, id FROM department`;
+
+      db.query(sql, (err, data) => {
+        if (err) throw err;
+
+        const department = data.map(({ name, id }) => ({
+          name: name,
+          value: id,
+        }));
+        inquirer
+          .prompt([
+            {
+              type: 'list',
+              name: 'department',
+              message: 'What department is the role associated with?',
+              choices: department,
+            },
+          ])
+          .then(departmentChoice => {
+            const department = departmentChoice.department;
+            params.push(department);
+
+            const sql = `INSERT INTO role (title, salary, department_id)
+                         VALUES (?, ?, ?)`;
+
+            db.query(sql, params, (err, result) => {
+              if (err) throw err;
+
+              console.info(`Added ${answer.role} to roles!`);
+
+              viewRoles();
+            });
+          });
+      });
+    });
+};
+
 // DELETE department
 deleteDepartment = () => {
   const sql = `SELECT * FROM department`;
@@ -141,6 +217,14 @@ deleteDepartment = () => {
           name: 'department',
           message: 'Which department do you want to delete?',
           choices: department,
+        },
+
+        {
+          type: 'confirm',
+          name: 'confirmDeleteDepartment',
+          message: 'Are you sure you want to delete this department? (Y/N)',
+          default: false,
+          when: ({ department }) => department,
         },
       ])
       .then(departmentChoice => {
