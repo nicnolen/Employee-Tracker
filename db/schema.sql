@@ -1,5 +1,5 @@
 /* SETS UP WHAT OUR TABLE WILL LOOK LIKE */
-/* Drops the department table if it exists */
+-- Drops the department table if it exists
 DROP TABLE IF EXISTS department;
 
 CREATE TABLE department (
