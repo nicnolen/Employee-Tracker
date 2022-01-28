@@ -45,7 +45,8 @@ const promptUser = () => {
         showDepartments();
       }
 
-      if (choices === 'No Action') {
+      if (choices === 'Quit') {
+        console.info('Ending prompts')
         connection.end();
       }
     });
