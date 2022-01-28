@@ -85,7 +85,7 @@ viewDepartments = () => {
 
 // VIEW roles
 viewRoles = () => {
-  const sql = `SELECT role.id, role.title, department.name AS department
+  const sql = `SELECT role.id, role.title, role.salary, department.name AS department
                FROM role
                INNER JOIN department ON role.department_id = department.id`;
 
@@ -154,8 +154,7 @@ addRole = () => {
           if (addSalary) {
             return true;
           } else {
-            console.info('Please enter a salary (numbers only)');
-            return false;
+            return console.info('Please enter a salary (numbers only). Press the up arrow key to retry.)');
           }
         },
       },
