@@ -43,7 +43,11 @@ const promptUser = () => {
       const { choices } = answers;
 
       if (choices === 'View All Departments') {
-        showDepartments();
+        viewDepartments();
+      }
+
+      if (choices === 'Add a Department') {
+        addDepartment();
       }
 
       if (choices === 'Quit') {
@@ -53,8 +57,8 @@ const promptUser = () => {
     });
 };
 
-// Function to show all departments
-showDepartments = () => {
+// VIEW all departments
+viewDepartments = () => {
   const sql = `SELECT department.id AS id, department.name AS department FROM department`;
 
   db.query(sql, (err, rows) => {
@@ -66,3 +70,35 @@ showDepartments = () => {
     promptUser();
   });
 };
+
+addDepartment = () => {
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'addDepartment',
+        message: 'What department would you like to add?',
+        validate: addDepartment => {
+          if (addDepartment) {
+            return true;
+          } else {
+            console.info('Please enter a department!');
+            return false;
+          }
+        },
+      },
+    ])
+    .then(answer => {
+      const sql = `INSERT INTO department (name)
+                   VALUES (?)`;
+
+      db.query(sql, answer.addDepartment, (err, data) => {
+        if (err) throw err;
+        console.info(`Added ${answer.addDepartment} to departments!`);
+
+        viewDepartments();
+      });
+    });
+};
+
+// ADD department
