@@ -46,6 +46,10 @@ const promptUser = () => {
         viewDepartments();
       }
 
+      if (choices === 'View all Roles') {
+        viewRoles();
+      }
+
       if (choices === 'Add a Department') {
         addDepartment();
       }
@@ -71,6 +75,21 @@ viewDepartments = () => {
 
     console.info('Showing all departments!');
     // Return the user to the prompts
+    promptUser();
+  });
+};
+
+// VIEW roles
+viewRoles = () => {
+  const sql = `SELECT role.id, role.title, department.name AS department
+               FROM role
+               INNER JOIN department ON role.department_id = department.id`;
+
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+
+    console.info('Showing all roles');
     promptUser();
   });
 };
