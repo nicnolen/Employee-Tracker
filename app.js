@@ -50,6 +50,10 @@ const promptUser = () => {
         addDepartment();
       }
 
+      if (choices === 'Delete a Department') {
+        deleteDepartment();
+      }
+
       if (choices === 'Quit') {
         console.info('Ending prompts');
         connection.end();
@@ -71,6 +75,7 @@ viewDepartments = () => {
   });
 };
 
+// ADD department
 addDepartment = () => {
   inquirer
     .prompt([
@@ -92,7 +97,7 @@ addDepartment = () => {
       const sql = `INSERT INTO department (name)
                    VALUES (?)`;
 
-      db.query(sql, answer.addDepartment, (err, data) => {
+      db.query(sql, answer.addDepartment, (err, row) => {
         if (err) throw err;
         console.info(`Added ${answer.addDepartment} to departments!`);
 
@@ -101,4 +106,34 @@ addDepartment = () => {
     });
 };
 
-// ADD department
+// DELETE department
+deleteDepartment = () => {
+  const sql = `SELECT * FROM department`;
+
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+
+    const department = data.map(({ name, id }) => ({ name: name, value: id }));
+
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'department',
+          message: 'Which department do you want to delete?',
+          choices: department,
+        },
+      ])
+      .then(departmentChoice => {
+        const department = departmentChoice.department;
+        const sql = `DELETE FROM department WHERE id =?`;
+
+        db.query(sql, department, (error, row) => {
+          if (err) throw err;
+          console.info('Department successfully deleted!');
+
+          viewDepartments();
+        });
+      });
+  });
+};
