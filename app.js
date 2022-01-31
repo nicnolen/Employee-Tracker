@@ -21,7 +21,7 @@ const promptUser = () => {
           'What would you like to do? (Scroll to "quit" to end the prompts)',
         choices: [
           'View All Departments',
-          'View all Roles',
+          'View All Roles',
           'View All Employees',
           'Add a Department',
           'Add a Role',
@@ -45,8 +45,12 @@ const promptUser = () => {
         viewDepartments();
       }
 
-      if (choices === 'View all Roles') {
+      if (choices === 'View All Roles') {
         viewRoles();
+      }
+
+      if (choices === 'View All Employees') {
+        viewEmployees();
       }
 
       if (choices === 'Add a Department') {
@@ -101,6 +105,28 @@ viewRoles = () => {
   });
 };
 
+// VIEW employees
+viewEmployees = () => {
+  const sql = `SELECT employee.id, 
+                 employee.first_name, 
+                 employee.last_name, 
+                 role.title, 
+                 department.name AS department,
+                 role.salary, 
+                 CONCAT (manager.first_name, " ", manager.last_name) AS manager
+               FROM employee
+                 LEFT JOIN role ON employee.role_id = role.id
+                 LEFT JOIN department ON role.department_id = department.id
+                 LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+
+    console.info('Showing all employees!');
+    promptUser();
+  });
+};
 // ADD department
 addDepartment = () => {
   inquirer
