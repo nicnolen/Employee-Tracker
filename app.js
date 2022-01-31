@@ -1,5 +1,5 @@
 // Import personal files
-const db = require('./db/connection');
+const db = require('./config/connection');
 const ctable = require('console.table');
 const inquirer = require('inquirer');
 
@@ -28,7 +28,6 @@ const promptUser = () => {
           'Add an Employee',
           'Update an Employee Role',
           'Update Employee Manager',
-          'Update Employees by Manager',
           'View Employees by Department',
           'Delete a Department',
           'Delete a Role',
@@ -60,6 +59,10 @@ const promptUser = () => {
 
       if (choices === 'Delete a Department') {
         deleteDepartment();
+      }
+
+      if (choices === 'Delete a Role') {
+        deleteRole();
       }
 
       if (choices === 'Quit') {
@@ -154,7 +157,9 @@ addRole = () => {
           if (addSalary) {
             return true;
           } else {
-            return console.info('Please enter a salary (numbers only). Press the up arrow key to retry.)');
+            return console.info(
+              'Please enter a salary (numbers only). Press the up arrow key to retry.)'
+            );
           }
         },
       },
@@ -235,6 +240,46 @@ deleteDepartment = () => {
           console.info('Department successfully deleted!');
 
           viewDepartments();
+        });
+      });
+  });
+};
+
+// DELETE a role
+deleteRole = () => {
+  const sql = `SELECT * FROM role`;
+
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+
+    const role = data.map(({ title, id }) => ({ name: title, value: id }));
+
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'role',
+          message: 'What role do you want to delete?',
+          choices: role,
+        },
+
+        {
+          type: 'confirm',
+          name: 'confirmDeleteDepartment',
+          message: 'Are you sure you want to delete this department? (Y/N)',
+          default: false,
+          when: ({ role }) => role,
+        },
+      ])
+      .then(roleChoice => {
+        const role = roleChoice.role;
+        const sql = `DELETE FROM role WHERE id = ?`;
+
+        db.query(sql, role, (err, result) => {
+          if (err) throw err;
+
+          console.info('Role deleted successfully!');
+          viewRoles();
         });
       });
   });
