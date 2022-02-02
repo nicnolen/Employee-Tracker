@@ -73,6 +73,10 @@ const promptUser = () => {
         updateEmployee();
       }
 
+      if (choices === 'Update Employee Manager') {
+        updateManager();
+      }
+
       if (choices === 'Delete a Department') {
         deleteDepartment();
       }
@@ -431,6 +435,73 @@ updateEmployee = () => {
   });
 };
 
+// UPDATE an employees manager
+updateManager = () => {
+  // get employees from employee table
+  const sql = `SELECT * FROM employee`;
+
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+
+    const employees = data.map(({ id, first_name, last_name }) => ({
+      name: first_name + ' ' + last_name,
+      value: id,
+    }));
+
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'name',
+          message: 'Which employee would you like to update?',
+          choices: employees,
+        },
+      ])
+      .then(empChoice => {
+        const employee = empChoice.name;
+        const params = [];
+        params.push(employee);
+
+        const sql = `SELECT * FROM employee`;
+
+        db.query(sql, (err, data) => {
+          if (err) throw err;
+
+          const managers = data.map(({ id, first_name, last_name }) => ({
+            name: first_name + '' + last_name,
+            value: id,
+          }));
+
+          inquirer
+            .prompt([
+              {
+                type: 'list',
+                name: 'manager',
+                message: 'Who is the manager for the employee?',
+                choices: managers,
+              },
+            ])
+            .then(managerChoice => {
+              const manager = managerChoice.manager;
+              params.push(manager);
+
+              let employee = params[0];
+              params[0] = manager;
+              params[1] = employee;
+
+              const sql = `UPDATE employee SET manager_id = ? WHERE id = ?`;
+
+              db.query(sql, params, (err, result) => {
+                if (err) throw err;
+                console.info('Employee has been updated!');
+
+                viewEmployees();
+              });
+            });
+        });
+      });
+  });
+};
 // DELETE department
 deleteDepartment = () => {
   const sql = `SELECT * FROM department`;
