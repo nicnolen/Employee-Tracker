@@ -361,10 +361,18 @@ addEmployee = () => {
               inquirer
                 .prompt([
                   {
+                    type: 'confirm',
+                    name: 'confirmManager',
+                    message: 'Does this employee have a manager? (Y/N)',
+                    default: true,
+                  },
+
+                  {
                     type: 'list',
                     name: 'manager',
                     message: 'Who is the manager for the employee?',
                     choices: managers,
+                    when: ({ confirmManager }) => confirmManager,
                   },
                 ])
                 .then(managerChoice => {
@@ -447,7 +455,7 @@ updateEmployee = () => {
               db.query(sql, params, (err, result) => {
                 if (err) throw err;
 
-                console.info('Employee has been updated!');
+                console.info('Employee role has been updated!');
 
                 viewEmployees();
               });
@@ -554,7 +562,7 @@ deleteDepartment = () => {
         const department = departmentChoice.department;
         const sql = `DELETE FROM department WHERE id =?`;
 
-        db.query(sql, department, (error, row) => {
+        db.query(sql, department, (err, row) => {
           if (err) throw err;
           console.info('Department successfully deleted!');
 

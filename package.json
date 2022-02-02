@@ -4,7 +4,7 @@
   "description": "## Description Developers frequently have to create interfaces that allow non-developers to easily view and interact with information stored in databases. These interfaces are called content management systems (CMS). This command-line application was built to manage a company's employee database, using Node.js, Inquirer, and MySQL.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node app.js"
   },
   "repository": {
@@ -21,6 +21,7 @@
     "console.table": "^0.10.0",
     "dotenv": "^14.3.2",
     "inquirer": "^8.2.0",
+    "jest": "^27.4.7",
     "mysql2": "^2.3.3"
   }
 }
