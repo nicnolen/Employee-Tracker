@@ -23,16 +23,16 @@ const promptUser = () => {
           'View All Departments',
           'View All Roles',
           'View All Employees',
+          'View Employees by Department',
+          'View Department Budgets',
           'Add a Department',
           'Add a Role',
           'Add an Employee',
           'Update an Employee Role',
           'Update Employee Manager',
-          'View Employees by Department',
           'Delete a Department',
           'Delete a Role',
           'Delete an Employee',
-          'View Department Budgets',
           'Quit',
         ],
       },
@@ -51,6 +51,10 @@ const promptUser = () => {
 
       if (choices === 'View All Employees') {
         viewEmployees();
+      }
+
+      if (choices === 'View Employees by Department') {
+        viewEmployeeDepartment();
       }
 
       if (choices === 'Add a Department') {
@@ -135,6 +139,26 @@ viewEmployees = () => {
     promptUser();
   });
 };
+
+// VIEW employees by department
+viewEmployeeDepartment = () => {
+  const sql = `SELECT employee.first_name,
+                 employee.last_name,
+                 department.name AS department
+               FROM employee
+               LEFT JOIN role ON employee.role_id = role.id
+               LEFT JOIN department ON role.department_id = department.id`;
+
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+
+    console.table(rows);
+    console.info('Showing employees by department');
+
+    promptUser();
+  });
+};
+
 // ADD department
 addDepartment = () => {
   inquirer
