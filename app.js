@@ -294,7 +294,7 @@ addEmployee = () => {
             const role = roleChoice.role;
             params.push(role);
 
-            const managerSql = `SELECT * FROM employee`;
+            const sql = `SELECT * FROM employee`;
 
             db.query(sql, (err, data) => {
               if (err) throw err;
