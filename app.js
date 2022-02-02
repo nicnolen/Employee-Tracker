@@ -159,7 +159,8 @@ viewEmployeeDepartment = () => {
                  department.name AS department
                FROM employee
                LEFT JOIN role ON employee.role_id = role.id
-               LEFT JOIN department ON role.department_id = department.id`;
+               LEFT JOIN department ON role.department_id = department.id
+               ORDER BY department`;
 
   db.query(sql, (err, rows) => {
     if (err) throw err;
