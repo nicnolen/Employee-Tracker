@@ -61,12 +61,20 @@ const promptUser = () => {
         addRole();
       }
 
+      if (choices === 'Add an Employee') {
+        addEmployee();
+      }
+
       if (choices === 'Delete a Department') {
         deleteDepartment();
       }
 
       if (choices === 'Delete a Role') {
         deleteRole();
+      }
+
+      if (choices === 'Delete an Employee') {
+        deleteEmployee();
       }
 
       if (choices === 'Quit') {
@@ -231,6 +239,100 @@ addRole = () => {
     });
 };
 
+// ADD Employee
+addEmployee = () => {
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'firstName',
+        message: 'What is the first name of the employee?',
+        validate: addFirst => {
+          if (addFirst) {
+            return true;
+          } else {
+            console.info('Please enter the first name of the employee');
+            return false;
+          }
+        },
+      },
+      {
+        type: 'input',
+        name: 'lastName',
+        message: 'What is the last name of the employee?',
+        validate: addLast => {
+          if (addLast) {
+            return true;
+          } else {
+            console.info('Please enter the last name of the employee');
+            return false;
+          }
+        },
+      },
+    ])
+    .then(answer => {
+      const params = [answer.firstName, answer.lastName];
+
+      // grab roles from the roles table
+      const sql = `SELECT role.id, role.title FROM role`;
+
+      db.query(sql, (err, data) => {
+        if (err) throw err;
+
+        const roles = data.map(({ id, title }) => ({ name: title, value: id }));
+
+        inquirer
+          .prompt([
+            {
+              type: 'list',
+              name: 'role',
+              message: 'What role does the employee have?',
+              choices: roles,
+            },
+          ])
+          .then(roleChoice => {
+            const role = roleChoice.role;
+            params.push(role);
+
+            const managerSql = `SELECT * FROM employee`;
+
+            db.query(sql, (err, data) => {
+              if (err) throw err;
+
+              const managers = data.map(({ id, first_name, last_name }) => ({
+                name: first_name + ' ' + last_name,
+                value: id,
+              }));
+
+              inquirer
+                .prompt([
+                  {
+                    type: 'list',
+                    name: 'manager',
+                    message: 'Who is the manager for the employee?',
+                    choices: managers,
+                  },
+                ])
+                .then(managerChoice => {
+                  const manager = managerChoice.manager;
+                  params.push(manager);
+
+                  const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                  VALUES (?, ?, ?, ?)`;
+
+                  db.query(sql, params, (err, result) => {
+                    if (err) throw err;
+
+                    console.info('New employee added!');
+
+                    viewEmployees();
+                  });
+                });
+            });
+          });
+      });
+    });
+};
 // DELETE department
 deleteDepartment = () => {
   const sql = `SELECT * FROM department`;
@@ -306,6 +408,51 @@ deleteRole = () => {
 
           console.info('Role deleted successfully!');
           viewRoles();
+        });
+      });
+  });
+};
+
+// Delete an employee
+deleteEmployee = () => {
+  // get employee from employee table
+  const sql = `SELECT * FROM employee`;
+
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+
+    const employees = data.map(({ id, first_name, last_name }) => ({
+      name: first_name + '' + last_name,
+      value: id,
+    }));
+
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'name',
+          message: 'Which employee would you like to delete?',
+          choices: employees,
+        },
+        {
+          type: 'confirm',
+          name: 'confirmDeleteEmployee',
+          message: 'Are you sure you want to delete this employee? (Y/N)',
+          default: false,
+          when: ({ employees }) => employees,
+        },
+      ])
+      .then(employeeChoice => {
+        const employee = employeeChoice.name;
+
+        const sql = `DELETE FROM employee WHERE id = ?`;
+
+        db.query(sql, employee, (err, result) => {
+          if (err) throw err;
+
+          console.info('Employee successfully deleted!');
+
+          viewEmployees();
         });
       });
   });
