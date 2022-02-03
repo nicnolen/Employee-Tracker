@@ -7,8 +7,8 @@ const db = require('./config/connection');
 
 // Import constructor functions
 const Department = require('./library/Department');
-const Role = require('./library/Role')
-const Employee = require('./library/Employee')
+const Role = require('./library/Role');
+const Employee = require('./library/Employee');
 
 // Inquirer prompt for the first action
 const promptUser = () => {
@@ -144,32 +144,29 @@ viewEmployees = () => {
 // VIEW employees by department
 viewEmployeeDepartment = () => {
   Employee.getEmployeeDepartment()
-  .then(([rows]) => {
-    printTable(rows);
-    console.info('Showing employees by department');
+    .then(([rows]) => {
+      printTable(rows);
+      console.info('Showing employees by department');
 
-    promptUser();
-  })
-  .catch(err => {
-    console.error(err);
-  });
+      promptUser();
+    })
+    .catch(err => {
+      console.error(err);
+    });
 };
 
 // VIEW department budget
 viewBudget = () => {
-  const sql = `SELECT department_id AS id,
-                      department.name AS department,
-                      SUM(salary) AS budget
-               FROM role
-               JOIN department ON role.department_id = department.id GROUP BY department_id`;
+  Department.getBudget()
+    .then(([rows]) => {
+      printTable(rows);
+      console.info('Showing budgets by department');
 
-  db.query(sql, (err, rows) => {
-    if (err) throw err;
-    printTable(rows);
-
-    console.info('Showing budget by department');
-    promptUser();
-  });
+      promptUser();
+    })
+    .catch(err => {
+      console.error(err);
+    });
 };
 
 // ADD department
