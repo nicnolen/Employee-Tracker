@@ -1,14 +1,8 @@
 // Import personal files
 const db = require('./config/connection');
-const ctable = require('console.table');
+const { printTable } = require('console-table-printer');
 const inquirer = require('inquirer');
-
-// Start server after database connection
-db.connect(err => {
-  if (err) throw err;
-  console.info('Database connected.');
-  promptUser();
-});
+const Store = require('./db/index');
 
 // Inquirer prompt for the first action
 const promptUser = () => {
@@ -95,38 +89,45 @@ const promptUser = () => {
 
       if (choices === 'Quit') {
         console.info('Ending prompts');
-        connection.end();
+        process.exit();
       }
     });
 };
 
 // VIEW all departments
 viewDepartments = () => {
-  const sql = `SELECT department.id AS id, department.name AS department FROM department`;
-
-  db.query(sql, (err, rows) => {
-    if (err) throw err;
-    console.table(rows);
-
-    console.info('Showing all departments!');
-    // Return the user to the prompts
-    promptUser();
-  });
+  Store.getDepartment()
+    .then(([rows]) => {
+      printTable(rows);
+      promptUser();
+    })
+    .catch(err => {
+      console.error(err);
+    });
 };
 
 // VIEW roles
 viewRoles = () => {
-  const sql = `SELECT role.id, role.title, role.salary, department.name AS department
-               FROM role
-               INNER JOIN department ON role.department_id = department.id`;
+  // const sql = `SELECT role.id, role.title, role.salary, department.name AS department
+  //              FROM role
+  //              INNER JOIN department ON role.department_id = department.id`;
 
-  db.query(sql, (err, rows) => {
-    if (err) throw err;
-    console.table(rows);
+  // db.query(sql, (err, rows) => {
+  //   if (err) throw err;
+  //   printTable(rows);
 
-    console.info('Showing all roles');
-    promptUser();
-  });
+  //   console.info('Showing all roles');
+  //   promptUser();
+  // });
+  Store.getRoles()
+    .then(([rows]) => {
+      printTable(rows);
+
+      promptUser();
+    })
+    .catch(err => {
+      console.error(err);
+    });
 };
 
 // VIEW employees
@@ -145,7 +146,7 @@ viewEmployees = () => {
 
   db.query(sql, (err, rows) => {
     if (err) throw err;
-    console.table(rows);
+    printTable(rows);
 
     console.info('Showing all employees!');
     promptUser();
@@ -165,7 +166,7 @@ viewEmployeeDepartment = () => {
   db.query(sql, (err, rows) => {
     if (err) throw err;
 
-    console.table(rows);
+    printTable(rows);
     console.info('Showing employees by department');
 
     promptUser();
@@ -182,7 +183,7 @@ viewBudget = () => {
 
   db.query(sql, (err, rows) => {
     if (err) throw err;
-    console.table(rows);
+    printTable(rows);
 
     console.info('Showing budget by department');
     promptUser();
@@ -656,3 +657,5 @@ deleteEmployee = () => {
       });
   });
 };
+
+promptUser();
