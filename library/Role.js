@@ -1,18 +1,10 @@
 const connection = require('../config/connection');
 
-class Store {
+class Role {
   constructor(connect) {
     this.connect = connect;
   }
-
-  getDepartment() {
-    return this.connect
-      .promise()
-      .query(
-        `SELECT department.id AS id, department.name AS department FROM department`
-      );
-  }
-
+  
   getRoles() {
     return this.connect.promise()
       .query(`SELECT role.id, role.title, role.salary, department.name AS department
@@ -21,4 +13,4 @@ class Store {
   }
 }
 
-module.exports = new Store(connection);
+module.exports = new Role(connection);

@@ -1,8 +1,14 @@
-// Import personal files
-const db = require('./config/connection');
+// Import dependencies
 const { printTable } = require('console-table-printer');
 const inquirer = require('inquirer');
-const Store = require('./db/index');
+
+// Import personal files
+const db = require('./config/connection');
+
+// Import constructor functions
+const Department = require('./library/Department');
+const Role = require('./library/Role')
+const Employee = require('./library/Employee')
 
 // Inquirer prompt for the first action
 const promptUser = () => {
@@ -96,9 +102,10 @@ const promptUser = () => {
 
 // VIEW all departments
 viewDepartments = () => {
-  Store.getDepartment()
+  Department.getDepartment()
     .then(([rows]) => {
       printTable(rows);
+      console.info('Showing all departments');
       promptUser();
     })
     .catch(err => {
@@ -108,20 +115,10 @@ viewDepartments = () => {
 
 // VIEW roles
 viewRoles = () => {
-  // const sql = `SELECT role.id, role.title, role.salary, department.name AS department
-  //              FROM role
-  //              INNER JOIN department ON role.department_id = department.id`;
-
-  // db.query(sql, (err, rows) => {
-  //   if (err) throw err;
-  //   printTable(rows);
-
-  //   console.info('Showing all roles');
-  //   promptUser();
-  // });
-  Store.getRoles()
+  Role.getRoles()
     .then(([rows]) => {
       printTable(rows);
+      console.info('Showing all roles');
 
       promptUser();
     })
@@ -132,44 +129,29 @@ viewRoles = () => {
 
 // VIEW employees
 viewEmployees = () => {
-  const sql = `SELECT employee.id, 
-                 employee.first_name, 
-                 employee.last_name, 
-                 role.title, 
-                 department.name AS department,
-                 role.salary, 
-                 CONCAT (manager.first_name, " ", manager.last_name) AS manager
-               FROM employee
-                 LEFT JOIN role ON employee.role_id = role.id
-                 LEFT JOIN department ON role.department_id = department.id
-                 LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+  Employee.getEmployees()
+    .then(([rows]) => {
+      printTable(rows);
+      console.info('Showing all employees');
 
-  db.query(sql, (err, rows) => {
-    if (err) throw err;
-    printTable(rows);
-
-    console.info('Showing all employees!');
-    promptUser();
-  });
+      promptUser();
+    })
+    .catch(err => {
+      console.error(err);
+    });
 };
 
 // VIEW employees by department
 viewEmployeeDepartment = () => {
-  const sql = `SELECT employee.first_name,
-                 employee.last_name,
-                 department.name AS department
-               FROM employee
-               LEFT JOIN role ON employee.role_id = role.id
-               LEFT JOIN department ON role.department_id = department.id
-               ORDER BY department`;
-
-  db.query(sql, (err, rows) => {
-    if (err) throw err;
-
+  Employee.getEmployeeDepartment()
+  .then(([rows]) => {
     printTable(rows);
     console.info('Showing employees by department');
 
     promptUser();
+  })
+  .catch(err => {
+    console.error(err);
   });
 };
 
