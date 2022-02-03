@@ -3,7 +3,6 @@ const mysql = require('mysql2');
 
 // Import .env file, overriding any existing environmental variables
 require('dotenv').config({ override: true });
-console.log(process.env);
 
 // Create connection to database
 const db = mysql.createConnection({
@@ -11,6 +10,12 @@ const db = mysql.createConnection({
   user: 'root',
   password: process.env.PASSWORD,
   database: 'employee_db',
+});
+
+// Start server after database connection
+db.connect(err => {
+  if (err) throw err;
+  console.info('Database connected.');
 });
 
 // Export the module
