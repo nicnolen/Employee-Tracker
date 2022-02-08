@@ -9,7 +9,7 @@
 - [Usage Instructions](#usage-instructions)
 - [License Section](#license)
 
-- [Testing](#testing)
+- [Tests](#tests)
 - [Contact Me](#contact-me)
 
 ## Description
@@ -69,7 +69,7 @@ Click on the link for more information: [MIT License Information](https://openso
 
 ## Tests
 
-If you would like see how the current tests work, type `npm test` in the command line. After running the `npm test` command, you should see a bunch of passing tests in the command line as shown below.
+If you would like see how the current tests work first install jest using the command npm i jest. After jest is installed, type `npm test` in the command line. After running the `npm test` command, you should see a bunch of passing tests in the command line as shown below.
 
 ![Successful Test](https://user-images.githubusercontent.com/88728912/152415961-2b916a13-7bbd-4784-aa44-00cce467e9b5.png)
 
