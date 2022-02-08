@@ -5,16 +5,23 @@
 ## Table of Contents
 
 - [Description](#description)
+- [Built With](#built-with)
 - [Installation Instructions](#installation-instructions)
 - [Usage Instructions](#usage-instructions)
 - [License Section](#license)
-
 - [Tests](#tests)
 - [Contact Me](#contact-me)
 
 ## Description
 
 Developers frequently have to create interfaces that allow non-developers to easily view and interact with information stored in databases. These interfaces are called content management systems (CMS). This command-line application was built to manage a company's employee database, using Node.js, Inquirer, and MySQL.
+
+## Built With
+- JavaScript
+- Node.js
+- Inquirer
+- MySQL
+- Jest
 
 ## Installation Instructions
 
